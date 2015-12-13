@@ -1,5 +1,5 @@
-var APP_ID = 'amzn1.echo-sdk-ams.app.2e95bc57-f34e-40e0-b237-2766461bdbf5';
-var CUSTOMER_PHONE_NUMBER = 1234567890;
+var APP_ID = 'amzn1.echo-sdk-ams.app.2e95bc57-f34e-40e0-b237-2766461bdbf5'; // replace with our APP_ID
+var CUSTOMER_PHONE_NUMBER = 1234567890; // replace with your Domino's account phone number
 
 var AlexaSkill = require('./AlexaSkill');
 var pizzapi = require('dominos');

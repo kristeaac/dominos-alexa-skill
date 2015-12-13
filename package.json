@@ -1,0 +1,8 @@
+{
+  "name": "dominos-alexa-skill",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "dominos": "2.0.0"
+  }
+}

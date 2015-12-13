@@ -1,0 +1,10 @@
+{
+    "intents": [
+        {
+            "intent": "TrackMyPizza"
+        },
+        {
+            "intent": "AMAZON.HelpIntent"
+        }
+    ]
+}

@@ -76,11 +76,21 @@ function trackMyPizza(session, response) {
 }
 
 function buildTrackMyPizzaSpeechOutput(pizzaData) {
+    var orderCount = getOrderCount(pizzaData);
+
     var speechText;
-    if (hasActiveOrder(pizzaData)) {
-        speechText = 'Your order is ' + pizzaData["orders"]["OrderStatus"]["OrderStatus"];
+    if (orderCount === 0) {
+        speechText = "I didn't find any active orders for you."
+    } else if (orderCount === 1) {
+        var order = pizzaData["orders"]["OrderStatus"];
+        speechText = buildOrderSpeechText(order)
     } else {
-        speechText = 'No active orders were found for your account.';
+        speechText = orderCount + " orders were found. ";
+        var orders = pizzaData["orders"]["OrderStatus"];
+        for (var i = 0; i < orders.length; i++) {
+            var order = orders[i];
+            speechText += buildOrderSpeechText(order, i);
+        }
     }
 
     var speechOutput = {
@@ -91,8 +101,28 @@ function buildTrackMyPizzaSpeechOutput(pizzaData) {
     return speechOutput;
 }
 
-function hasActiveOrder(pizzaData) {
-    return pizzaData && pizzaData["orders"] && pizzaData["orders"]["OrderStatus"] && pizzaData["orders"]["OrderStatus"]["OrderStatus"];
+function getOrderCount(pizzaData) {
+    if (!pizzaData || !pizzaData["orders"] || !pizzaData["orders"]["OrderStatus"]) {
+        return 0;
+    }
+
+    var orderStatus = pizzaData["orders"]["OrderStatus"];
+
+    if (orderStatus instanceof Array) {
+        return orderStatus.length;
+    } else {
+        return 1;
+    }
+}
+
+function buildOrderSpeechText(order, orderIndex) {
+    var speechText = "";
+    if (orderIndex) {
+        speechText += "Order " + (orderIndex + 1) + ", a " + order["ServiceMethod"] + " order ";
+    } else {
+        speechText += "An order ";
+    }
+    return speechText + "for " + order["OrderDescription"].replace("\n", "") + " placed by " + order["CsrName"] + " is " + order["OrderStatus"] + ". ";
 }
 
 exports.handler = function (event, context) {

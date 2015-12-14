@@ -1,10 +1,33 @@
 var Helper = function () {};
 
-Helper.prototype.log = function () {
-    console.log('buz!');
+Helper.prototype.buildTrackMyOrderSpeechText = function(pizzaData) {
+    var orderCount = getOrderCount(pizzaData);
+
+    var speechText;
+    if (orderCount === 0) {
+        speechText = "I didn't find any active orders for you."
+    } else if (orderCount === 1) {
+        var order = pizzaData["orders"]["OrderStatus"];
+        speechText = buildOrderSentences(order)[0];
+    } else {
+        var sentences = [];
+        sentences.push(orderCount + ' orders were found.');
+        var orders = pizzaData["orders"]["OrderStatus"];
+        if (allSameStatus(orders)) {
+            sentences.push('All orders are ' + getOrderStatus(orders[0]) + '.');
+        } else {
+            for (var i = 0; i < orders.length; i++) {
+                var order = orders[i];
+                sentences.push('Order ' + (i + 1) + ' is ' + getOrderStatus(order) + '.');
+            }
+        }
+        speechText = sentences.join(' ');
+    }
+
+    return speechText;
 };
 
-Helper.prototype.getOrderCount = function(pizzaData) {
+function getOrderCount(pizzaData) {
     if (!pizzaData || !pizzaData["orders"] || !pizzaData["orders"]["OrderStatus"]) {
         return 0;
     }
@@ -16,37 +39,26 @@ Helper.prototype.getOrderCount = function(pizzaData) {
     } else {
         return 1;
     }
-};
+}
 
-Helper.prototype.buildOrderSpeechText = function(order, orderIndex) {
-    var speechText = "";
-    if (orderIndex) {
-        speechText += "Order " + (orderIndex + 1) + ", a " + order["ServiceMethod"] + " order ";
-    } else {
-        speechText += "An order ";
-    }
-    return speechText + "for " + order["OrderDescription"].replace("\n", "") + " placed by " + order["CsrName"] + " is " + order["OrderStatus"] + ". ";
-};
+function getOrderStatus(order) {
+    return order["OrderStatus"].toLowerCase();
+}
 
-Helper.prototype.buildTrackMyOrderSpeechText = function(pizzaData) {
-    var orderCount = this.getOrderCount(pizzaData);
+function buildOrderSentences(order) {
+    var sentences = [];
+    sentences.push('Your order is ' + getOrderStatus(order));
+    return sentences;
+}
 
-    var speechText;
-    if (orderCount === 0) {
-        speechText = "I didn't find any active orders for you."
-    } else if (orderCount === 1) {
-        var order = pizzaData["orders"]["OrderStatus"];
-        speechText = this.buildOrderSpeechText(order)
-    } else {
-        speechText = orderCount + " orders were found. ";
-        var orders = pizzaData["orders"]["OrderStatus"];
-        for (var i = 0; i < orders.length; i++) {
-            var order = orders[i];
-            speechText += this.buildOrderSpeechText(order, i);
+function allSameStatus(orders) {
+    var status = getOrderStatus(orders[0]);
+    for (var i = 0; i < orders.length; i++) {
+        if (status !== getOrderStatus(orders[i])) {
+            return false;
         }
     }
-
-    return speechText;
-};
+    return true;
+}
 
 module.exports = new Helper();

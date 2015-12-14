@@ -3,6 +3,7 @@ var CUSTOMER_PHONE_NUMBER = 1234567890; // replace with your Domino's account ph
 
 var AlexaSkill = require('./AlexaSkill');
 var pizzapi = require('dominos');
+var helper = require('./helper.js');
 
 var DominosSkill = function () {
     AlexaSkill.call(this, APP_ID);
@@ -31,20 +32,6 @@ DominosSkill.prototype.eventHandlers.onSessionEnded = function (sessionEndedRequ
     //Any session cleanup logic would go here.
 };
 
-function tellAvailableCommands(response) {
-    var speechText = "You can say, where's my pizza, or, track my order.";
-
-    var speechOutput = {
-        speech: speechText,
-        type: AlexaSkill.speechOutputType.PLAIN_TEXT
-    };
-    var repromptOutput = {
-        speech: speechText,
-        type: AlexaSkill.speechOutputType.PLAIN_TEXT
-    };
-    response.ask(speechOutput, repromptOutput);
-}
-
 DominosSkill.prototype.intentHandlers = {
     "TrackMyPizza": function (intent, session, response) {
         trackMyPizza(session, response);
@@ -69,60 +56,30 @@ function trackMyPizza(session, response) {
     pizzapi.Track.byPhone(
         CUSTOMER_PHONE_NUMBER,
         function(pizzaData){
-            var speechOutput = buildTrackMyPizzaSpeechOutput(pizzaData);
+            var speechText = helper.buildTrackMyOrderSpeechText(pizzaData);
+
+            var speechOutput = {
+                speech: speechText,
+                type: AlexaSkill.speechOutputType.PLAIN_TEXT
+            };
+
             response.tell(speechOutput);
         }
     );
 }
 
-function buildTrackMyPizzaSpeechOutput(pizzaData) {
-    var orderCount = getOrderCount(pizzaData);
-
-    var speechText;
-    if (orderCount === 0) {
-        speechText = "I didn't find any active orders for you."
-    } else if (orderCount === 1) {
-        var order = pizzaData["orders"]["OrderStatus"];
-        speechText = buildOrderSpeechText(order)
-    } else {
-        speechText = orderCount + " orders were found. ";
-        var orders = pizzaData["orders"]["OrderStatus"];
-        for (var i = 0; i < orders.length; i++) {
-            var order = orders[i];
-            speechText += buildOrderSpeechText(order, i);
-        }
-    }
+function tellAvailableCommands(response) {
+    var speechText = "You can say, where's my pizza, or, track my order.";
 
     var speechOutput = {
         speech: speechText,
         type: AlexaSkill.speechOutputType.PLAIN_TEXT
     };
-
-    return speechOutput;
-}
-
-function getOrderCount(pizzaData) {
-    if (!pizzaData || !pizzaData["orders"] || !pizzaData["orders"]["OrderStatus"]) {
-        return 0;
-    }
-
-    var orderStatus = pizzaData["orders"]["OrderStatus"];
-
-    if (orderStatus instanceof Array) {
-        return orderStatus.length;
-    } else {
-        return 1;
-    }
-}
-
-function buildOrderSpeechText(order, orderIndex) {
-    var speechText = "";
-    if (orderIndex) {
-        speechText += "Order " + (orderIndex + 1) + ", a " + order["ServiceMethod"] + " order ";
-    } else {
-        speechText += "An order ";
-    }
-    return speechText + "for " + order["OrderDescription"].replace("\n", "") + " placed by " + order["CsrName"] + " is " + order["OrderStatus"] + ". ";
+    var repromptOutput = {
+        speech: speechText,
+        type: AlexaSkill.speechOutputType.PLAIN_TEXT
+    };
+    response.ask(speechOutput, repromptOutput);
 }
 
 exports.handler = function (event, context) {

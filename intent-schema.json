@@ -1,7 +1,7 @@
 {
     "intents": [
         {
-            "intent": "TrackMyPizza"
+            "intent": "TrackMyOrder"
         },
         {
             "intent": "AMAZON.HelpIntent"

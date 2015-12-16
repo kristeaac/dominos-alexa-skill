@@ -33,8 +33,8 @@ DominosSkill.prototype.eventHandlers.onSessionEnded = function (sessionEndedRequ
 };
 
 DominosSkill.prototype.intentHandlers = {
-    "TrackMyPizza": function (intent, session, response) {
-        trackMyPizza(session, response);
+    "TrackMyOrder": function (intent, session, response) {
+        trackMyOrder(session, response);
     },
 
     "AMAZON.HelpIntent": function (intent, session, response) {
@@ -52,7 +52,7 @@ DominosSkill.prototype.intentHandlers = {
     }
 };
 
-function trackMyPizza(session, response) {
+function trackMyOrder(session, response) {
     pizzapi.Track.byPhone(
         CUSTOMER_PHONE_NUMBER,
         function(pizzaData){

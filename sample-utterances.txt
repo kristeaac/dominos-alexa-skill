@@ -2,4 +2,12 @@ TrackMyOrder where's my pizza
 TrackMyOrder where's my order
 TrackMyOrder to check on my pizza
 TrackMyOrder to check on my order
+PlaceAnOrder that i'm hungry
+PlaceAnOrder that i am hungry
+PlaceAnOrder that i'm starving
+PlaceAnOrder that i am starving
+PlaceAnOrder that i would like to place an order
+YesIntent yes
+YesIntent sure
+YesIntent of course
 AMAZON.HelpIntent how do i track my order

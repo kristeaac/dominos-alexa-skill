@@ -4,6 +4,12 @@
             "intent": "TrackMyOrder"
         },
         {
+            "intent": "PlaceAnOrder"
+        },
+        {
+            "intent": "YesIntent"
+        },
+        {
             "intent": "AMAZON.HelpIntent"
         }
     ]

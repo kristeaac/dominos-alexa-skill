@@ -1,4 +1,4 @@
-var APP_ID = 'amzn1.echo-sdk-ams.app.2e95bc57-f34e-40e0-b237-2766461bdbf5'; // replace with our APP_ID
+var APP_ID = 'amzn1.echo-sdk-ams.app.2e95bc57-f34e-40e0-b237-2766461bdbf5'; // replace with your APP_ID
 var CUSTOMER_PHONE_NUMBER = 1234567890; // replace with your Domino's account phone number
 
 var AlexaSkill = require('./AlexaSkill');
@@ -37,6 +37,18 @@ DominosSkill.prototype.intentHandlers = {
         trackMyOrder(session, response);
     },
 
+    "PlaceAnOrder": function (intent, session, response) {
+        placeAnOrder(session, response);
+    },
+
+    "PlaceAnOrderMattWontCook": function (intent, session, response) {
+        placeAnOrderMattWontCook(session, response);
+    },
+
+    "YesIntent": function (intent, session, response) {
+        responseToYes(session, response);
+    },
+
     "AMAZON.HelpIntent": function (intent, session, response) {
         tellAvailableCommands(response);
     },
@@ -67,6 +79,45 @@ function trackMyOrder(session, response) {
         }
     );
 }
+
+function placeAnOrder(session, response) {
+    var speechOutput = {
+        speech: "Would you like the usual?",
+        type: AlexaSkill.speechOutputType.PLAIN_TEXT
+    };
+
+    session.attributes.stage = 1;
+
+    response.ask(speechOutput);
+}
+
+function placeAnOrderMattWontCook(session, response) {
+    var speechOutput = {
+        speech: "I'm sorry to hear that about your fiance, but you should try to cut him some slack. He's probably just really excited about the big move. I can help you guys out! Would you like the usual?",
+        type: AlexaSkill.speechOutputType.PLAIN_TEXT
+    };
+
+    session.attributes.stage = 1;
+
+    response.ask(speechOutput);
+}
+
+function responseToYes(session, response) {
+
+    if (session.attributes.stage === 1) {
+        speechOutput = "Ok, one medium pineapple and bacon pizza, coming right up!";
+    } else {
+        speechOutput = "Sorry, I didn't quite catch that";
+    }
+
+    var speechOutput = {
+        speech: speechOutput,
+        type: AlexaSkill.speechOutputType.PLAIN_TEXT
+    };
+
+    response.tell(speechOutput);
+}
+
 
 function tellAvailableCommands(response) {
     var speechText = "You can say, where's my pizza, or, track my order.";

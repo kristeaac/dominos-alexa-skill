@@ -45,9 +45,32 @@ function getOrderStatus(order) {
     return order["OrderStatus"].toLowerCase();
 }
 
+function isDelivery(order) {
+    return getServiceMethod(order) === "delivery";
+}
+
+function getServiceMethod(order) {
+    return order["ServiceMethod"].toLowerCase();
+}
+
 function buildOrderSentences(order) {
     var sentences = [];
-    sentences.push('Your order is ' + getOrderStatus(order));
+    var orderStatus = getOrderStatus(order);
+    if (orderStatus === "routing station") {
+        orderStatus = "being quality checked";
+
+        if (isDelivery(order)) {
+            orderStatus += " and should be out for delivery soon";
+        }
+
+    } else if (orderStatus === "makeline") {
+        orderStatus = "being prepared";
+    } else if (orderStatus === "oven") {
+        orderStatus = "in the oven";
+    } else if (orderStatus === "complete" && isDelivery(order)) {
+        orderStatus = " complete and has been delivered";
+    }
+    sentences.push('Your order is ' + orderStatus);
     return sentences;
 }
 
